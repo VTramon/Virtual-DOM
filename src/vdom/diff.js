@@ -63,7 +63,7 @@ const diffChildren = (oldVChildren, newVChildren) => {
   };
 };
 
-const diff = (vOldNode, vNewNode) => {
+const diff = (vNewNode, vOldNode = undefined) => {
   if (vNewNode === undefined) {
     return ($node) => {
       $node.remove();
@@ -71,7 +71,7 @@ const diff = (vOldNode, vNewNode) => {
     };
   }
 
-  if (vOldNode.tagName !== vNewNode.tagName) {
+  if (vOldNode === undefined || vOldNode.tagName !== vNewNode.tagName) {
     return ($node) => {
       const newNode = render(vNewNode);
       $node.replaceWith(newNode);
