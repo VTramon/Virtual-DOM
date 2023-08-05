@@ -18,7 +18,6 @@ const render = (vnode) => {
     return document.createTextNode(vnode);
   }
 
-  console.log(typeof vnode);
   return renderElement(vnode);
 };
 
