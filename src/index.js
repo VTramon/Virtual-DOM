@@ -1,6 +1,7 @@
 import createElement from "./vdom/createElement.js";
 import render from "./vdom/render.js";
 import mount from "./vdom/mount.js";
+import diff from "./vdom/diff.js";
 
 const createVapp = (count) =>
   createElement("div", {
@@ -9,6 +10,7 @@ const createVapp = (count) =>
       dataCount: count,
     },
     children: [
+      createElement("input"),
       String(count),
       createElement("img", {
         props: {
@@ -18,10 +20,17 @@ const createVapp = (count) =>
     ],
   });
 
-const vapp = createVapp(3);
+var count = 0;
+const vapp = createVapp(count);
 
 const app = render(vapp);
 
-mount(app, document.getElementById("root"));
+var rootEl = mount(app, document.getElementById("root"));
 
-// console.log(app);
+// setInterval(() => {
+//   count++;
+//   const vNewApp = createVapp(count);
+//   const patch = diff(vapp, vNewApp);
+
+//   rootEl = patch(rootEl);
+// }, 1000);
