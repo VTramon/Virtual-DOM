@@ -1,27 +1,33 @@
 const virtualize = (node) => {
   if (node.nodeType === 3) {
-    return String(node);
-  }
-
-  const children = [];
-
-  for (const child of node.childNodes) {
-    if (
-      child.nodeType === 1 ||
-      (child.nodeType === 3 && !/[^\t\n\r ]/.test(node.textContent))
-    ) {
-      children.push(virtualize(child));
+    if (/[^\t\n\r ]/.test(node.textContent)) {
+      return String(node.textContent);
     }
   }
 
-  const response = {
-    tagName: node.tagName,
-    props: Object.assign({}, node.getAttributeNames()),
-    children: children,
-  };
+  const children = [];
+  if (node.nodeType === 1) {
+    for (const child of node.childNodes) {
+      if (
+        (child.nodeType === 3 && /[^\t\n\r ]/.test(child.textContent)) ||
+        child.nodeType === 1
+      )
+        children.push(virtualize(child));
+    }
 
-  //   console.log(response);
-  return response;
+    const props = [];
+    for (const prop of node.getAttributeNames()) {
+      props.push([prop, node.getAttribute(prop)]);
+    }
+
+    const response = {
+      tagName: node.tagName,
+      props: Object.fromEntries(props),
+      children: children,
+    };
+
+    return response;
+  }
 };
 
 export default virtualize;

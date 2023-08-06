@@ -10,22 +10,25 @@ const zip = (xs, ys) => {
 
 const diffProps = (oldProps, newProps) => {
   const patches = [];
-
-  for (const [k, v] of Object.entries(newProps)) {
-    patches.push(($node) => {
-      $node.setAttribute(k, v);
-      return $node;
-    });
+  if (newProps !== undefined) {
+    for (const [k, v] of Object.entries(newProps)) {
+      if (!oldProps[k] || oldProps[k] !== v) {
+        patches.push(($node) => {
+          $node.setAttribute(k, v);
+          return $node;
+        });
+      }
+    }
   }
 
-  //   for (const [k, v] of Object.entries(oldProps)) {
-  //     if (!(k in newProps)) {
-  //       patches.push(($node) => {
-  //         $node.removeAttribute(k);
-  //         return $node;
-  //       });
-  //     }
-  //   }
+  for (const [k, v] of Object.entries(oldProps)) {
+    if (!(k in newProps)) {
+      patches.push(($node) => {
+        $node.removeAttribute(k);
+        return $node;
+      });
+    }
+  }
 
   return ($node) => {
     for (const patch of patches) {
@@ -36,18 +39,17 @@ const diffProps = (oldProps, newProps) => {
 
 const diffChildren = (oldVChildren, newVChildren) => {
   const childPatches = [];
-
-  oldVChildren.forEach((oldVChild, i) => {
-    childPatches.push(diff(oldVChild, newVChildren[i]));
-  });
+  for (const [ondVChild, newVChild] of zip(oldVChildren, newVChildren)) {
+    childPatches.push(diff(newVChild, ondVChild));
+  }
 
   const additionalPatches = [];
 
   for (const additionalVChild of newVChildren.slice(oldVChildren.length)) {
     additionalPatches.push(($node) => {
       $node.appendChild(render(additionalVChild));
+      return $node;
     });
-    return $node;
   }
 
   return ($parent) => {
@@ -63,19 +65,11 @@ const diffChildren = (oldVChildren, newVChildren) => {
   };
 };
 
-const diff = (vNewNode, vOldNode = undefined) => {
+const diff = (vNewNode, vOldNode) => {
   if (vNewNode === undefined) {
     return ($node) => {
       $node.remove();
       return undefined;
-    };
-  }
-
-  if (vOldNode === undefined || vOldNode.tagName !== vNewNode.tagName) {
-    return ($node) => {
-      const newNode = render(vNewNode);
-      $node.replaceWith(newNode);
-      return newNode;
     };
   }
 
@@ -91,7 +85,17 @@ const diff = (vNewNode, vOldNode = undefined) => {
     }
   }
 
-  //   console.log(vNewNode);
+  if (
+    vOldNode.tagName.localeCompare(vNewNode.tagName) !== 0 ||
+    vOldNode === undefined
+  ) {
+    return ($node) => {
+      const newNode = render(vNewNode);
+      $node.replaceWith(newNode);
+      return newNode;
+    };
+  }
+
   const patchProps = diffProps(vOldNode.props, vNewNode.props);
   const patchChildren = diffChildren(vOldNode.children, vNewNode.children);
 

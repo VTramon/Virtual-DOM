@@ -22,25 +22,65 @@ import virtualize from "./vdom/virtualize.js";
 //   });
 
 // var count = 0;
-// const vapp = createVapp(count);
+// var vapp = createVapp(count);
 
-// const app = diff(vapp);
+// // render()
+
+// const app = render(vapp);
+
+// var rootEl = mount(app, document.getElementById("app"));
 
 // var rootEl = app(document.getElementById("app"));
 
-const root = document.getElementById("app");
-
-console.log(virtualize(root));
-
-// console.log(root.nodeType);
-
-// var rootEl = mount(app, document.getElementById("root"));
-// var rootEl = mount(app, document.getElementById("root"));
+// var count = 0;
 
 // setInterval(() => {
 //   count++;
-//   const vNewApp = createVapp(count);
-//   const patch = diff(vapp, vNewApp);
-
+//   const newVapp = createVapp(count);
+//   const patch = diff(newVapp, vapp);
 //   rootEl = patch(rootEl);
+//   vapp = newVapp;
 // }, 1000);
+
+// _________________________________________________
+// _________________________________________________
+// _________________________________________________
+
+// countContainer.innerHTML = count;
+
+function setCount(type = "Increment") {
+  if (type === "Decrement") {
+    count--;
+  } else {
+    count++;
+  }
+  const vapp = virtualize(countContainer);
+  vapp.props["data-count"] = String(count);
+  vapp.children[0] = String(count);
+  const patch = diff(vapp, virtualize(countContainer));
+
+  countContainer = patch(countContainer);
+}
+
+function Decrement() {
+  setCount("Decrement");
+}
+
+var count = 0;
+var countContainer = document.getElementById("count");
+
+document.getElementById("increment_button").addEventListener("click", () => {
+  Decrement();
+});
+
+// document.getElementById("increment_button").addEventListener("click", () => {
+//   Increment();
+// });
+
+// const app = document.getElementById("app");
+
+// var rootEl = mount(app, document.getElementById("root"));
+
+setInterval(() => {
+  setCount();
+}, 1000);
