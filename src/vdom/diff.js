@@ -21,14 +21,14 @@ const diffProps = (oldProps, newProps) => {
     }
   }
 
-  for (const [k, v] of Object.entries(oldProps)) {
-    if (!(k in newProps)) {
-      patches.push(($node) => {
-        $node.removeAttribute(k);
-        return $node;
-      });
-    }
-  }
+  // for (const k of Object.entries(oldProps)) {
+  //   if (!(k in newProps)) {
+  //     patches.push(($node) => {
+  //       $node.removeAttribute(k);
+  //       return $node;
+  //     });
+  //   }
+  // }
 
   return ($node) => {
     for (const patch of patches) {

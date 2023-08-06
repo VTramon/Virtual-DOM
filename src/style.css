@@ -1,0 +1,7 @@
+button:active {
+  background-color: green;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
